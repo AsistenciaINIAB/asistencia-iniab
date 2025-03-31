@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Asistencia INIAB</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        form { max-width: 600px; }
+        label { display: block; margin-top: 20px; font-weight: bold; }
+        .checkbox-group label { font-weight: normal; }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .status { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Formulario de Asistencia INIAB</h1>
+    <form id="asistencia-form">
+        <label for="cic">Seleccione su nombre (CIC):</label>
+        <select id="cic" required>
+            <option value="">Cargando CICs...</option>
+        </select>
+
+        <div id="checkboxes" class="checkbox-group"></div>
+
+        <button type="submit">Enviar asistencia</button>
+        <div id="status" class="status"></div>
+    </form>
+
+    <script>
+        const urlBase = "https://script.google.com/macros/s/AKfycbzSh-aa0RTURCu9oOCpPVdFhhNtGp96NlOLr5aRVleIeTL5w5K4e6WBW_lFOJds6Q6W/exec";
+        let personal = [];
+
+        window.onload = function() {
+            fetch(urlBase)
+                .then(res => res.json())
+                .then(cics => {
+                    const select = document.getElementById('cic');
+                    select.innerHTML = '<option value="">-- Seleccione --</option>';
+                    cics.forEach(nombre => {
+                        const opt = document.createElement('option');
+                        opt.value = nombre;
+                        opt.textContent = nombre;
+                        select.appendChild(opt);
+                    });
+                });
+        };
+
+        document.getElementById('cic').addEventListener('change', function() {
+            const cic = this.value;
+            if (!cic) return;
+
+            fetch(`${urlBase}?cic=${encodeURIComponent(cic)}`)
+                .then(res => res.json())
+                .then(data => {
+                    personal = data;
+                    const div = document.getElementById('checkboxes');
+                    div.innerHTML = '<label>Marque quiénes asistieron:</label>';
+                    personal.forEach(p => {
+                        const checkbox = `
+                            <label>
+                                <input type="checkbox" name="asistencia" value="${p.nombre}">
+                                ${p.nombre} (${p.categoria})
+                            </label><br>`;
+                        div.innerHTML += checkbox;
+                    });
+                });
+        });
+
+        document.getElementById('asistencia-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const cic = document.getElementById('cic').value;
+            const checkboxes = document.querySelectorAll('input[name=asistencia]:checked');
+            const seleccionados = Array.from(checkboxes).map(c => c.value);
+            const data = personal.map(p => ({
+                cic: cic,
+                nombre: p.nombre,
+                dni: p.dni,
+                categoria: p.categoria,
+                estado: seleccionados.includes(p.nombre) ? "Presente" : "Ausente"
+            }));
+
+            fetch(urlBase, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: { "Content-Type": "application/json" }
+            }).then(res => res.text()).then(resp => {
+                if (resp.includes("OK")) {
+                    document.getElementById('status').textContent = "✅ Asistencia registrada y correo enviado al CIC.";
+                } else {
+                    document.getElementById('status').textContent = "❌ Error al enviar: " + resp;
+                }
+                document.getElementById('asistencia-form').reset();
+                document.getElementById('checkboxes').innerHTML = '';
+            }).catch(err => {
+                document.getElementById('status').textContent = "❌ Error de conexión.";
+            });
+        });
+    </script>
+</body>
+</html>
