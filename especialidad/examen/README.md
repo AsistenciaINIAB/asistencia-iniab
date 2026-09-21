@@ -16,7 +16,8 @@ especialidad/examen/
 │                                       MAFFT, ConSurf, AlphaFold, ...)
 ├── resultados/
 │   ├── informe_analisis.md            INFORME PRINCIPAL (respuestas 1-4)
-│   └── flujo_de_trabajo.md            FLUJO paso a paso con las herramientas del Taller
+│   ├── flujo_de_trabajo.md            FLUJO paso a paso con las herramientas del Taller
+│   └── entrega_y_setup.md             Qué entregar, estructura del informe y setup de cada web
 └── figuras/                           (perfil de hidropatía al correr el script)
 ```
 
