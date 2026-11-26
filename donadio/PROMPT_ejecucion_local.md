@@ -5,15 +5,15 @@
 Carpeta del proyecto: **"Donadio proteomica"**
 https://drive.google.com/drive/folders/1rKkyBqEewxLEKrrOtkvIA-5XXznJzsxW
 
-Armá en tu PC esta carpeta, por ejemplo `~/Genomica_Donadio/`, y bajá adentro:
+Armá en tu PC esta carpeta, por ejemplo `/mnt/proyectos/Genomica_Donadio/`, y bajá adentro:
 
 | Qué | Dónde está en el Drive | Dónde ponerlo en la PC |
 |---|---|---|
-| **Todo `Analisis_multiomico/`** (scripts, ambiente, resultados, figuras, datos procesados) | `Analisis_multiomico/` | `~/Genomica_Donadio/Analisis_multiomico/` |
-| Matriz de conteos del proveedor | `Transcriptomica/RNAseq_ARG_Completo/Mapeamentos/ARG_Completo_Unique reads.xlsx` | `~/Genomica_Donadio/crudos/` |
-| Resumen de mapeo | `Transcriptomica/RNAseq_ARG_Completo/Resumo Mapeamento ARG.ods` | `~/Genomica_Donadio/crudos/` |
-| Metadatos | `Transcriptomica/Metadata Transcriptomica.docx` y `Analisis Metabolomico 2024/Metadata de Metabolomica.docx` | `~/Genomica_Donadio/crudos/` |
-| **FASTQ** (los 36: 18 muestras × R1/R2, ~370 MB cada uno) | `Transcriptomica/ARG-421632644/BCLConvert_.../N-ARG-ds.*/` (**en el Drive solo están 11-ARG y 15-ARG**; pedir el resto a UFPR / BaseSpace) | `~/Genomica_Donadio/fastq/` (todos juntos, sin subcarpetas) |
+| **Todo `Analisis_multiomico/`** (scripts, ambiente, resultados, figuras, datos procesados) | `Analisis_multiomico/` | `/mnt/proyectos/Genomica_Donadio/Analisis_multiomico/` |
+| Matriz de conteos del proveedor | `Transcriptomica/RNAseq_ARG_Completo/Mapeamentos/ARG_Completo_Unique reads.xlsx` | `/mnt/proyectos/Genomica_Donadio/crudos/` |
+| Resumen de mapeo | `Transcriptomica/RNAseq_ARG_Completo/Resumo Mapeamento ARG.ods` | `/mnt/proyectos/Genomica_Donadio/crudos/` |
+| Metadatos | `Transcriptomica/Metadata Transcriptomica.docx` y `Analisis Metabolomico 2024/Metadata de Metabolomica.docx` | `/mnt/proyectos/Genomica_Donadio/crudos/` |
+| **FASTQ** (los 36: 18 muestras × R1/R2, ~370 MB cada uno) | `Transcriptomica/ARG-421632644/BCLConvert_.../N-ARG-ds.*/` (**en el Drive solo están 11-ARG y 15-ARG**; pedir el resto a UFPR / BaseSpace) | `/mnt/proyectos/Genomica_Donadio/fastq/` (todos juntos, sin subcarpetas) |
 
 Ya están dentro de `Analisis_multiomico/datos_procesados/`, así que no hace falta bajarlos aparte:
 - `counts_E109.tsv` y `counts_Az39.tsv`, con los locus_tag ya corregidos;
@@ -34,9 +34,10 @@ Los scripts también están en GitHub, en el repo `AsistenciaINIAB/asistencia-in
 
 ## 2. Prompt para pegar en Claude Code (VS Code)
 
-Abrí `~/Genomica_Donadio/` en VS Code, abrí Claude Code y pegá esto:
+Abrí `/mnt/proyectos/Genomica_Donadio/` en VS Code (Archivo → Abrir carpeta), abrí Claude Code y pegá esto:
 
 ```text
+Directorio de trabajo: /mnt/proyectos/Genomica_Donadio (usá rutas relativas a esta carpeta).
 Contexto: tesis doctoral (Donadío, UNRC). Interacción Bradyrhizobium japonicum E109 –
 Azospirillum argentinense Az39. Ya hay un análisis multi-ómico hecho; los scripts y
 resultados están en ./Analisis_multiomico/ (leé primero Analisis_multiomico/LEEME_resultados_multiomica.md
