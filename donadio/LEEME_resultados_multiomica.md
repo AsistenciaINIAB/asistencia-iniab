@@ -1,4 +1,4 @@
-# Análisis multi-ómico E109 – Az39: transcriptómica, metabolómica e integración (versión 4)
+# Análisis multi-ómico E109 – Az39: transcriptómica, metabolómica e integración (versión 5)
 
 **Cambios respecto de la versión 1:**
 - **Nombres de genes en la matriz de conteos.** La matriz del proveedor (`ARG_Completo_Unique reads.xlsx`) usa el símbolo del gen (p. ej. `rplT`, `actP_1`) en lugar del locus_tag en 139 genes de E109 y 120 de Az39. Se reasignaron por posición genómica, verificando el símbolo de cada uno; no hubo ninguna inconsistencia (`scripts/00_preparar_datos.py`). Las estadísticas no cambian, pero ahora esos genes tienen anotación.
@@ -94,6 +94,62 @@ Desde los FASTQ también se puede ver la cobertura a lo largo de *ipdC* para ubi
 - `datos_procesados/`: conteos con locus_tag corregido, anotaciones y tablas de corrección de nombres.
 
 ---
+
+## 2b. Enriquecimiento funcional (COG)
+
+**Anotación:** COGclassifier v2, es decir RPS-BLAST contra la base CDD/COG 2024 de NCBI con e-value 0,01, sobre los proteomas NCBI.
+- E109: 6.536 de 8.233 proteínas con COG (79%).
+- Az39: 5.325 de 6.311 (84%).
+- Unos 1.500 y 1.100 genes, respectivamente, quedan asignados además a una de las vías COG.
+- KEGG y eggNOG no son accesibles desde este entorno.
+
+**Método:** ORA hipergeométrico con FDR BH, en dos niveles: categoría funcional y vía COG.
+- Universo: los genes testeados en DESeq2 que tienen COG.
+- Conjuntos: los genes DE (padj < 0,05, |log2FC| ≥ 1) de cada contraste, separados por sentido, y las clases AIA-dependiente e independiente.
+- En Az39, el contraste WT vs *ipdC* se hizo **sin los genes de p3**.
+- Script `08_enriquecimiento_COG.R`; resultados en `resultados/enriquecimiento/` y figuras en `figuras/enriquecimiento/`.
+
+**E109 en co-cultivo: la respuesta que no depende del AIA es un freno del crecimiento.** El patrón es casi igual con Az39 WT y con Az39-*ipdC*.
+
+Genes que **bajan**:
+
+| Vía o categoría | Genes | FDR |
+|---|---|---|
+| Ribosoma 50S | 33 de 33 | 10⁻¹⁵ |
+| Ribosoma 30S | 21 de 22 | 10⁻⁸ |
+| Aminoacil-tRNA sintetasas | | 10⁻⁴ |
+| NADH deshidrogenasa (complejo I) | | 10⁻⁴ |
+| ATP sintasa F0F1 | | 10⁻³ |
+| Biosíntesis de aminoácidos aromáticos | | 10⁻⁴ |
+| Biosíntesis de purinas y pirimidinas | | |
+| Motilidad (categoría N) | | 10⁻⁷ |
+| Pared y envoltura (categoría M) | | 10⁻⁵ |
+| Replicación (categoría L) | | 10⁻⁵ |
+
+Genes que **suben**:
+- metabolismo de carbohidratos (categoría G, FDR 10⁻⁴);
+- vía de Entner-Doudoroff no fosforilada (FDR 0,003);
+- degradación de prolina (FDR 0,005);
+- degradación de pirimidinas;
+- biosíntesis de menaquinona;
+- sistema de secreción tipo VI (FDR 0,02).
+
+Comparado con el AIA solo, el co-cultivo además activa la biosíntesis de ácidos grasos (FDR 0,001).
+
+**Interpretación:** es el perfil de una **respuesta a limitación de nutrientes, o respuesta estricta**: se apaga la maquinaria de traducción y de energía, y se activan el uso de fuentes alternativas de carbono y la acumulación de reservas (trehalosa y glucógeno, sección 3b). Encaja con la metabolómica, donde **Az39 agota el malato y el fumarato**, que también son fuentes de carbono preferidas por *Bradyrhizobium*. La hipótesis es que **Az39 compite por los C4-dicarboxilatos y E109 entra en un modo de ahorro**, independiente del AIA. La activación del sistema de secreción tipo VI sugiere además una interacción por contacto. Para confirmarlo convendría medir crecimiento y viabilidad de E109 a 4 h en co-cultivo, o suplementar malato.
+
+**Respuesta dependiente del AIA:**
+- Solo aparecen enriquecidas las categorías C (energía) y E (aminoácidos), con FDR 0,049.
+- El AIA solo enriquece la categoría I (lípidos, FDR 0,007), por las acil-CoA deshidrogenasas de la isla *iac*.
+- COG no tiene una vía de "degradación de AIA", así que la isla aparece repartida entre categorías. Como evidencia, el análisis de la región genómica (sección 1) es más directo.
+
+**Az39 con E109 (cepa salvaje):**
+- sube la **biosíntesis de isoleucina, leucina y valina** (9 de 37 genes, ×6,6, FDR 10⁻⁴; también en el mutante);
+- bajan los transportadores y el metabolismo de aminoácidos (categoría E) y la NADH deshidrogenasa.
+
+**Az39 salvaje vs *ipdC*, sin el plásmido p3:** la **motilidad está más alta en el mutante** (20 de 90 genes, ×4,2, FDR 10⁻⁶), junto con la transducción de señales (T). Es coherente con lo descripto para el AIA en *Azospirillum*, donde el AIA regula motilidad y quimiotaxis, aunque la pérdida de p3 no permite atribuirlo solo a *ipdC*.
+
+**Precaución:** la caída de ribosomas y energía en E109 también podría estar inflada por los sesgos técnicos del co-cultivo (sección 1). Pero aparece igual con las dos cepas de Az39, y encaja con la metabolómica, así que es probable que sea biológica.
 
 ## 3. Metabolómica de sobrenadantes (RMN ¹H, 4 h)
 
@@ -192,9 +248,10 @@ Sirve como confirmación visual de que las dos ómicas separan al control de los
 ## 5. Conclusión integrada y pendientes
 
 1. **El resultado sólido es que el AIA de Az39 activa en E109 la isla de catabolismo de AIA (*iac*).** Se ve en RNA (AIA exógeno ≈ co-cultivo, menor con el mutante) y es coherente con el triptófano y el AIA presentes en el sobrenadante.
-2. **Hay una segunda respuesta de E109 que no depende del AIA: la síntesis de trehalosa y glucógeno** (*otsA*, *treS*, glucógeno sintasa), activada en co-cultivo e igual con Az39-*ipdC*. El AIA solo hace lo opuesto: baja la trehalosa intracelular.
-3. En el sobrenadante del co-cultivo domina lo que aporta y consume Az39 (Trp ↑, C4-dicarboxilatos ↓). **En los extractos hay 22 señales que solo se explican por la interacción**; las más consistentes son malato y glutamato ↓ y acetilcolina ↑. La firma de acetato y 2-hidroxibutirato depende sobre todo de 2 frascos.
-4. **Pendientes de laboratorio, en orden de prioridad:**
+2. **E109 responde al co-cultivo frenando el crecimiento, independientemente del AIA:** bajan ribosomas, síntesis de proteínas, cadena respiratoria y motilidad, y suben las fuentes alternativas de carbono. Es compatible con la competencia por malato y fumarato que consume Az39.
+3. **Hay una segunda respuesta de E109 que no depende del AIA: la síntesis de trehalosa y glucógeno** (*otsA*, *treS*, glucógeno sintasa), activada en co-cultivo e igual con Az39-*ipdC*. El AIA solo hace lo opuesto: baja la trehalosa intracelular.
+4. En el sobrenadante del co-cultivo domina lo que aporta y consume Az39 (Trp ↑, C4-dicarboxilatos ↓). **En los extractos hay 22 señales que solo se explican por la interacción**; las más consistentes son malato y glutamato ↓ y acetilcolina ↑. La firma de acetato y 2-hidroxibutirato depende sobre todo de 2 frascos.
+5. **Pendientes de laboratorio, en orden de prioridad:**
    1. confirmar la pérdida del plásmido p3 en Az39-*ipdC* y la mutación de *ipdC*;
    2. revisar qué pasó con los sobrenadantes E1–E3 (los extractos de esos frascos están bien) y con los frascos EA1–EA2 (firma fermentativa);
    3. medir blancos de medio por RMN (MMAB+Trp, PSY, AB) e identificar la señal "Triptófano3" con un estándar de AIA;

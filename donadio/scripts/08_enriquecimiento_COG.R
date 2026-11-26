@@ -7,18 +7,20 @@
 ## Universo: genes testeados en DESeq2 (pasaron el filtro) con anotación COG.
 ## Conjuntos: genes DE (padj<0.05, |log2FC|>=1) por sentido en cada contraste,
 ## y clases de la respuesta de E109 a Az39 (AIA-dependiente / independiente).
-## Uso: Rscript 08_enriquecimiento_COG.R <directorio_de_trabajo> <dir_cog> <cog-24.def.tab> <fun-24.tab>
+## Uso: Rscript 08_enriquecimiento_COG.R <wd> <dir_cog> <cog-24.def.tab> <cog-24.fun.tab> <cog-24.pathways.tab>
+##   (archivos de https://ftp.ncbi.nlm.nih.gov/pub/COG/COG2024/data/)
 ## =============================================================================
 suppressMessages({ library(ggplot2) })
 args <- commandArgs(trailingOnly = TRUE)
-wd <- args[1]; cogdir <- args[2]; deffile <- args[3]; funfile <- args[4]
+wd <- args[1]; cogdir <- args[2]; deffile <- args[3]; funfile <- args[4]; pathfile <- args[5]
 res_dir <- file.path(wd, "results", "enriquecimiento"); fig_dir <- file.path(wd, "figures", "enriquecimiento")
 dir.create(res_dir, TRUE, TRUE); dir.create(fig_dir, TRUE, TRUE)
 ALPHA <- 0.05; LFC <- 1; MIN_TERM <- 5
 
 def <- read.delim(deffile, header = FALSE, quote = "", col.names = c("COG_ID", "letras", "nombre", "gen", "via", "pubmed", "pdb"))
-fun <- read.delim(funfile, header = FALSE, quote = "", col.names = c("letra", "color", "descripcion"))
-catname <- setNames(paste0(fun$letra, ": ", fun$descripcion), fun$letra)
+fl <- strsplit(readLines(funfile), "\t"); fl <- fl[lengths(fl) == 4 & nchar(sapply(fl, `[`, 1)) == 1]
+catname <- setNames(paste0(sapply(fl, `[`, 1), ": ", sapply(fl, `[`, 4)), sapply(fl, `[`, 1))
+pw <- read.delim(pathfile, header = FALSE, quote = "")[, 1:2]; names(pw) <- c("via", "COG_ID")
 
 leer_cog <- function(org) {
   f <- list.files(file.path(cogdir, paste0("cog_", org)), pattern = "classif.*\\.tsv$", full.names = TRUE)[1]
@@ -39,8 +41,8 @@ terminos <- function(a, nivel) {
   if (nivel == "categoria") {
     l <- strsplit(a$letras, ""); data.frame(locus_tag = rep(a$locus_tag, lengths(l)), termino = catname[unlist(l)])
   } else {
-    v <- a[!is.na(a$via) & a$via != "", ]
-    l <- strsplit(v$via, ",\\s*"); data.frame(locus_tag = rep(v$locus_tag, lengths(l)), termino = unlist(l))
+    m <- merge(a[, c("locus_tag", "COG_ID")], pw, by = "COG_ID")
+    data.frame(locus_tag = m$locus_tag, termino = m$via)
   }
 }
 
@@ -48,13 +50,13 @@ ora <- function(genes, universo, t2g) {
   t2g <- t2g[t2g$locus_tag %in% universo, ]
   genes <- intersect(genes, unique(t2g$locus_tag)); U <- unique(t2g$locus_tag)
   N <- length(U); K <- length(genes)
-  if (K < 3) return(NULL)
+  if (K < 3 || !nrow(t2g)) return(NULL)
   r <- do.call(rbind, lapply(split(t2g$locus_tag, t2g$termino), function(g) {
     g <- unique(g); n <- length(g); k <- sum(g %in% genes)
     data.frame(n_termino = n, k = k, esperado = n * K / N,
                p = phyper(k - 1, n, N - n, K, lower.tail = FALSE),
                genes = paste(sort(intersect(g, genes)), collapse = ",")) }))
-  r <- r[r$n_termino >= MIN_TERM, ]; r$termino <- rownames(r)
+  r <- r[r$n_termino >= MIN_TERM, ]; if (!nrow(r)) return(NULL); r$termino <- rownames(r)
   r$FDR <- p.adjust(r$p, "BH"); r$fold <- r$k / r$esperado; r$K_conjunto <- K; r$N_universo <- N
   r[order(r$p), c("termino", "k", "n_termino", "K_conjunto", "N_universo", "esperado", "fold", "p", "FDR", "genes")]
 }
@@ -97,7 +99,7 @@ write.table(R, file.path(res_dir, "01_ORA_COG_todos.tsv"), sep = "\t", quote = F
 sigR <- R[R$FDR < 0.05, ]
 write.table(sigR, file.path(res_dir, "02_ORA_COG_significativos.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
 cob <- sapply(names(anot), function(o) c(genes_con_COG = nrow(anot[[o]]),
-  con_via = sum(!is.na(anot[[o]]$via) & anot[[o]]$via != ""), universo_testeado = length(univ[[o]]),
+  con_via = sum(anot[[o]]$COG_ID %in% pw$COG_ID), universo_testeado = length(univ[[o]]),
   universo_con_COG = sum(univ[[o]] %in% anot[[o]]$locus_tag)))
 write.table(cbind(dato = rownames(cob), cob), file.path(res_dir, "00_cobertura_COG.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
 print(cob)
