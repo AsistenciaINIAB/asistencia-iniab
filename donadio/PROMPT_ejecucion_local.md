@@ -20,7 +20,7 @@ Ya están dentro de `Analisis_multiomico/datos_procesados/`, así que no hace fa
 - `anotacion_E109.tsv` y `anotacion_Az39.tsv`;
 - `metab_SN_matriz_asignada.csv` y `metab_EXT_matriz_MCR.csv`, las matrices de RMN.
 
-Los genomas se descargan solos de NCBI: GCA_000807315.1 (E109) y GCA_000632475.2 (Az39).
+Bases de datos y genomas: el prompt le indica a Claude Code que **primero revise `/mnt/basesdatos`** y que solo descargue lo que falte, con tu OK. Si no están, los genomas se bajan de NCBI: GCA_000807315.1 (E109) y GCA_000632475.2 (Az39).
 
 Necesitás tener instalados:
 - **Miniforge** (conda/mamba): https://github.com/conda-forge/miniforge;
@@ -48,13 +48,28 @@ Diseño RNA-seq (Illumina pareado, 4 h, 3 réplicas): 1-3 E109 control | 4-6 E10
 7-9 E109+Az39 | 10-12 E109+Az39-ipdC | 13-15 Az39 sola (MMAB) | 16-18 Az39-ipdC sola.
 FASTQ en ./fastq/ con nombres tipo 11-ARG_S19_L001_R1_001.fastq.gz.
 
+TAREA 0 – Bases de datos locales (ANTES de descargar nada)
+- Tengo bases de datos en /mnt/basesdatos. Antes de bajar cualquier base o genoma,
+  inventariá esa carpeta (ls -R hasta 3 niveles, tamaños, versiones/fechas, README) y armá
+  una tabla de lo disponible: genomas/FASTA/GFF de E109 y Az39, índices bowtie2, bases de
+  ARNr (SILVA/Rfam/SortMeRNA), eggNOG (eggnog.db + eggnog_proteins.dmnd), KOfam (profiles
+  + ko_list), CDD/COG, KEGG (KGML, listas KO-vía, compuestos), Pfam, UniProt, etc.
+- Usá siempre lo que haya en /mnt/basesdatos. Solo si falta algo necesario, decime qué es,
+  de dónde lo bajarías y cuánto pesa, y esperá mi OK antes de descargarlo.
+- No escribas, muevas ni borres nada dentro de /mnt/basesdatos: es de solo lectura para
+  este trabajo; los índices o archivos derivados van a ./Analisis_multiomico/v2_local/ref/.
+- Para asignar KO a los genes (TAREA 3), preferí en este orden: eggNOG-mapper o KofamScan
+  con las bases locales; KEGGREST solo si los genes de las cepas ya están en KEGG.
+
 TAREA 1 – Ambiente
 - Creá el ambiente con: mamba env create -f Analisis_multiomico/envs/donadio-multiomica.yml
   y agregale: fastp bowtie2 samtools subread (featureCounts) bedtools ncbi-datasets-cli,
   y en R: pathview, KEGGREST. Si DESeq2 no carga por GenomeInfoDbData, instalalo desde Bioconductor.
 
 TAREA 2 – Re-alineamiento competitivo (prioridad)
-1. Bajá de NCBI (datasets) FASTA + GFF de GCA_000807315.1 (E109) y GCA_000632475.2 (Az39).
+1. Usá FASTA + GFF de GCA_000807315.1 (E109) y GCA_000632475.2 (Az39) de /mnt/basesdatos
+   si están (verificá que sean esas versiones y que los locus_tag sean RN69_ / ABAZ39_);
+   si no, bajalos de NCBI con datasets (previo OK).
 2. Armá UN genoma combinado (E109 + Az39) y un GFF combinado; índice bowtie2.
 3. Por muestra: fastp (QC, recorte) → bowtie2 --very-sensitive contra el combinado
    (así cada lectura va a la bacteria donde mejor encaja; no secuencial) → samtools sort/index.
