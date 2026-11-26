@@ -15,20 +15,28 @@
 ##    Contraste lineal D = EA - E - AzM (escala lineal). Como B >= 0:
 ##      D > 0 significativo  -> PRODUCCIÓN EMERGENTE por la interacción (robusto)
 ##      D < 0                -> consumo neto o aporte del medio: requiere blanco
-## Uso: Rscript 05_metabolomica_SN.R <directorio_de_trabajo>
+## Extractos (fracción intracelular, EXT): el pellet de EA es una mezcla de células
+##    de ambas bacterias en proporción desconocida => sin interacción, EA queda
+##    ENTRE E y AzM. Se testea si EA está fuera de ese rango (por encima de ambos
+##    o por debajo de ambos, contrastes unilaterales, se toma el p mayor).
+## Uso: Rscript 05_metabolomica_SN.R <directorio_de_trabajo> [SN|EXT]
 ## =============================================================================
 suppressMessages({ library(ggplot2); library(pheatmap); library(ggrepel) })
 args <- commandArgs(trailingOnly = TRUE); wd <- if (length(args)) args[1] else "."
-res_dir <- file.path(wd, "results", "metabolomica"); fig_dir <- file.path(wd, "figures", "metabolomica")
+fr <- if (length(args) > 1) args[2] else "SN"
+fr_nombre <- c(SN = "Sobrenadantes", EXT = "Extractos intracelulares")[fr]
+infile <- c(SN = "metab_SN_matriz_asignada.csv", EXT = "metab_EXT_matriz_MCR.csv")[fr]
+sub <- c(SN = "metabolomica", EXT = "metabolomica_extractos")[fr]
+res_dir <- file.path(wd, "results", sub); fig_dir <- file.path(wd, "figures", sub)
 dir.create(res_dir, TRUE, TRUE); dir.create(fig_dir, TRUE, TRUE)
 
-raw <- read.csv2(file.path(wd, "data", "metab_SN_matriz_asignada.csv"), header = FALSE,
+raw <- read.csv2(file.path(wd, "data", infile), header = FALSE,
                  check.names = FALSE, fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
 samples <- as.character(raw[1, -1]); grp_raw <- as.character(raw[2, -1])
 X <- as.matrix(apply(raw[-(1:2), -1], 2, function(v) as.numeric(gsub(",", ".", v))))
 rownames(X) <- trimws(raw[-(1:2), 1]); colnames(X) <- samples
-grupo <- factor(c("Az39 LB" = "AzLB", "Az39 MMAB" = "AzM", "E109" = "E",
-                  "E109 + Az39" = "EA", "E109 + AIA" = "Eaia")[grp_raw],
+grupo <- factor(c("Az39 LB" = "AzLB", "Az39 MMAB" = "AzM", "E109" = "E", "E109 + Az39" = "EA",
+                  "E109 + AIA" = "Eaia", ALB = "AzLB", Az39 = "AzM", EA = "EA", EAIA = "Eaia")[trimws(grp_raw)],
                 levels = c("E", "Eaia", "EA", "AzM", "AzLB"))
 rep  <- as.integer(sub("^[A-Za-z]+", "", samples))
 tanda <- factor(ifelse(rep <= 3, "T1", "T2"))
@@ -55,9 +63,9 @@ cols <- c(E = "#4D4D4D", Eaia = "#E69F00", EA = "#0072B2", AzM = "#009E73", AzLB
 g <- ggplot(pd, aes(PC1, PC2, colour = grupo, shape = tanda, label = sample)) + geom_point(size = 3) +
   geom_text_repel(size = 2.5, show.legend = FALSE) + scale_colour_manual(values = cols) +
   labs(x = sprintf("PC1 (%.1f%%)", ve[1]), y = sprintf("PC2 (%.1f%%)", ve[2]),
-       title = "Sobrenadantes - PCA (log2, autoescalado)", shape = "Tanda (réplicas)") + theme_bw()
-ggsave(file.path(fig_dir, "01_PCA_sobrenadantes.png"), g, width = 7, height = 5.2, dpi = 200)
-ggsave(file.path(fig_dir, "01_PCA_sobrenadantes.pdf"), g, width = 7, height = 5.2)
+       title = paste(fr_nombre, "- PCA (log2, autoescalado)"), shape = "Tanda (réplicas)") + theme_bw()
+ggsave(file.path(fig_dir, paste0("01_PCA_", fr, ".png")), g, width = 7, height = 5.2, dpi = 200)
+ggsave(file.path(fig_dir, paste0("01_PCA_", fr, ".pdf")), g, width = 7, height = 5.2)
 
 ## efecto de tanda: por señal, F-test de 'tanda' dentro de grupo
 fit_tanda <- t(apply(L, 1, function(y) {
@@ -96,15 +104,30 @@ dec <- t(apply(Xk, 1, function(y) {
     esperado_sin_blanco = unname(b["grupoE"] + b["grupoAzM"]), D = D, t = D / se,
     p_produccion = pt(D / se, df, lower.tail = FALSE), p_dos_colas = 2 * pt(-abs(D / se), df)) }))
 dec <- data.frame(senal = rownames(Xk), metabolito = metab[keep], dec)
+if (fr == "EXT") {
+  ## fuera del rango [E, AzM]: unilateral contra el máximo (arriba) y contra el mínimo (abajo)
+  rng <- t(apply(Xk, 1, function(y) {
+    m <- lm(y ~ 0 + grupo + tanda); b <- coef(m); V <- vcov(m); df <- m$df.residual
+    ct <- function(w) { w2 <- setNames(rep(0, length(b)), names(b)); w2[names(w)] <- w
+      d <- sum(w2 * b); se <- sqrt(as.numeric(t(w2) %*% V %*% w2)); c(d, pt(d / se, df, lower.tail = FALSE)) }
+    a1 <- ct(c(grupoEA = 1, grupoE = -1)); a2 <- ct(c(grupoEA = 1, grupoAzM = -1))
+    b1 <- ct(c(grupoE = 1, grupoEA = -1)); b2 <- ct(c(grupoAzM = 1, grupoEA = -1))
+    c(p_arriba = max(a1[2], a2[2]), p_abajo = max(b1[2], b2[2])) }))
+  dec$p_arriba <- rng[, "p_arriba"]; dec$p_abajo <- rng[, "p_abajo"]
+  dec$FDR_arriba <- p.adjust(dec$p_arriba, "BH"); dec$FDR_abajo <- p.adjust(dec$p_abajo, "BH")
+}
 dec$FDR_produccion <- p.adjust(dec$p_produccion, "BH")
 dec$FDR_dos_colas  <- p.adjust(dec$p_dos_colas, "BH")
 dec$clase <- ifelse(dec$FDR_produccion < 0.05, "Producción emergente (EA > E + AzM)",
              ifelse(dec$FDR_dos_colas < 0.05 & dec$D < 0, "EA < E + AzM (consumo o aporte del medio; requiere blanco)",
                     "Compatible con suma de cultivos"))
+if (fr == "EXT") dec$clase <- ifelse(dec$FDR_arriba < 0.05, "EA por encima de E109 y de Az39 (emergente)",
+                          ifelse(dec$FDR_abajo < 0.05, "EA por debajo de E109 y de Az39 (emergente)",
+                                 "Dentro del rango de las dos bacterias"))
 dec <- dec[order(dec$clase, dec$p_dos_colas), ]
 write.table(dec, file.path(res_dir, "03_separacion_cocultivo.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
 print(table(dec$clase))
-print(head(dec[dec$FDR_produccion < 0.05, c("senal", "EA", "E", "AzM", "D", "FDR_produccion")], 25))
+print(head(dec[grepl("emergente|Producción", dec$clase), c("senal", "clase", "EA", "E", "AzM")], 40))
 
 ## ------------------------------------------------ resumen por metabolito -----
 ## metabolitos asignados: media de sus señales (escala lineal), por grupo
@@ -116,26 +139,26 @@ write.table(data.frame(metabolito = rownames(gm), round(gm, 4)), file.path(res_d
 z <- t(scale(t(log2(agg + eps))))
 ann_c <- data.frame(Grupo = grupo, Tanda = tanda, row.names = samples)
 pheatmap(z, annotation_col = ann_c, annotation_colors = list(Grupo = cols, Tanda = c(T1 = "grey30", T2 = "grey80")),
-         cluster_cols = TRUE, main = "Sobrenadantes - metabolitos asignados (z-score log2)",
+         cluster_cols = TRUE, main = paste(fr_nombre, "- metabolitos asignados (z-score log2)"),
          filename = file.path(fig_dir, "02_heatmap_metabolitos_asignados.pdf"), width = 10, height = 6.5)
 pheatmap(z, annotation_col = ann_c, annotation_colors = list(Grupo = cols, Tanda = c(T1 = "grey30", T2 = "grey80")),
-         cluster_cols = TRUE, main = "Sobrenadantes - metabolitos asignados (z-score log2)",
+         cluster_cols = TRUE, main = paste(fr_nombre, "- metabolitos asignados (z-score log2)"),
          filename = file.path(fig_dir, "02_heatmap_metabolitos_asignados.png"), width = 10, height = 6.5)
 
 ## figura de separación para metabolitos asignados
 dm <- dec[!is.na(dec$metabolito), ]
 long <- do.call(rbind, lapply(seq_len(nrow(dm)), function(i) data.frame(
   senal = dm$senal[i], clase = dm$clase[i],
-  tipo = c("E109 (E)", "Az39 MMAB (AzM)", "E + AzM (máximo sin interacción)", "Co-cultivo (EA)"),
+  tipo = c("E109 (E)", "Az39 MMAB (AzM)", "E + AzM (suma)", "Co-cultivo (EA)"),
   valor = c(dm$E[i], dm$AzM[i], dm$esperado_sin_blanco[i], dm$EA[i]))))
-long$tipo <- factor(long$tipo, levels = c("E109 (E)", "Az39 MMAB (AzM)", "E + AzM (máximo sin interacción)", "Co-cultivo (EA)"))
+long$tipo <- factor(long$tipo, levels = c("E109 (E)", "Az39 MMAB (AzM)", "E + AzM (suma)", "Co-cultivo (EA)"))
 long$senal <- factor(long$senal, levels = dm$senal[order(dm$D)])
 g <- ggplot(long, aes(valor, senal, colour = tipo, shape = tipo)) + geom_point(size = 2) +
   scale_colour_manual(values = c("#4D4D4D", "#009E73", "grey60", "#0072B2"), name = NULL) +
   scale_shape_manual(values = c(16, 17, 4, 15), name = NULL) +
   facet_grid(clase ~ ., scales = "free_y", space = "free_y", labeller = label_wrap_gen(22)) +
   labs(x = "concentración relativa (MCR-ALS, media de grupo ajustada por tanda)", y = NULL,
-       title = "Co-cultivo vs suma de los cultivos individuales (señales asignadas)") +
+       title = paste(fr_nombre, "- co-cultivo vs cultivos individuales (señales asignadas)")) +
   theme_bw() + theme(legend.position = "bottom", axis.text.y = element_text(size = 6.5),
                      strip.text.y = element_text(size = 7))
 ggsave(file.path(fig_dir, "03_separacion_cocultivo.png"), g, width = 9, height = 10, dpi = 200)

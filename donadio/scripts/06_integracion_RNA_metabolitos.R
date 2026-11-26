@@ -120,21 +120,28 @@ pheatmap(hm, main = "Isla iac de E109 vs metabolitos del sobrenadante\n(Spearman
          filename = file.path(fig_dir, "01_correlacion_isla_iac_vs_metabolitos.png"), width = 11, height = 8)
 
 ## -------------------------------------------- C) DIABLO lado E109 (n=9) -----
+## bloques: RNA E109 + metabolitos del sobrenadante + metabolitos intracelulares (extractos)
+rawx <- read.csv2(file.path(wd, "data", "metab_EXT_matriz_MCR.csv"), header = FALSE, check.names = FALSE,
+                  fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
+Xx <- as.matrix(apply(rawx[-(1:2), -1], 2, function(v) as.numeric(gsub(",", ".", v))))
+rownames(Xx) <- trimws(rawx[-(1:2), 1]); colnames(Xx) <- as.character(rawx[1, -1])
+Xx <- Xx[, met_s]; Xx <- Xx[apply(Xx, 1, function(v) sd(v) > 0 & mean(v > 1e-3) >= 0.25), ]
+Lx <- log2(Xx + min(Xx[Xx > 0]) / 2)
 top <- order(-apply(vs, 1, var))[1:1000]
-X <- list(RNA_E109 = t(vs[top, ]), Metabolitos_SN = t(Lm))
-rownames(X$RNA_E109) <- rownames(X$Metabolitos_SN) <- paste0(clase, "_", rep(1:3, 3))
-design <- matrix(0.5, 2, 2); diag(design) <- 0
-fit <- block.splsda(X, clase, ncomp = 2, keepX = list(RNA_E109 = c(20, 20), Metabolitos_SN = c(10, 10)), design = design)
-r1 <- cor(fit$variates$RNA_E109[, 1], fit$variates$Metabolitos_SN[, 1])
-cat(sprintf("DIABLO: correlación entre componentes 1 de RNA y metabolitos = %.3f\n", r1))
-selR <- selectVar(fit, block = "RNA_E109", comp = 1)$RNA_E109$value
-selM <- selectVar(fit, block = "Metabolitos_SN", comp = 1)$Metabolitos_SN$value
-fs <- rbind(data.frame(bloque = "RNA_E109", variable = rownames(selR), peso = selR$value.var,
-                       producto = annE$product[match(rownames(selR), annE$locus_tag)]),
-            data.frame(bloque = "Metabolitos_SN", variable = rownames(selM), peso = selM$value.var, producto = NA))
+X <- list(RNA_E109 = t(vs[top, ]), Metabolitos_SN = t(Lm), Metabolitos_EXT = t(Lx))
+for (b in names(X)) rownames(X[[b]]) <- paste0(clase, "_", rep(1:3, 3))
+design <- matrix(0.5, 3, 3); diag(design) <- 0
+fit <- block.splsda(X, clase, ncomp = 2, design = design,
+                    keepX = list(RNA_E109 = c(20, 20), Metabolitos_SN = c(10, 10), Metabolitos_EXT = c(10, 10)))
+cc <- cor(sapply(names(X), function(b) fit$variates[[b]][, 1]))
+cat("DIABLO: correlación entre componentes 1 de los bloques\n"); print(round(cc, 3))
+write.table(round(cc, 3), file.path(res_dir, "06_DIABLO_correlacion_bloques.tsv"), sep = "\t", quote = FALSE)
+fs <- do.call(rbind, lapply(names(X), function(b) { v <- selectVar(fit, block = b, comp = 1)[[b]]$value
+  data.frame(bloque = b, variable = rownames(v), peso = v$value.var,
+             producto = if (b == "RNA_E109") annE$product[match(rownames(v), annE$locus_tag)] else NA) }))
 write.table(fs, file.path(res_dir, "05_DIABLO_firma_comp1.tsv"), sep = "\t", quote = FALSE, row.names = FALSE)
-png(file.path(fig_dir, "02_DIABLO_muestras.png"), width = 1800, height = 900, res = 200)
-plotIndiv(fit, ind.names = TRUE, legend = TRUE, title = "DIABLO E109: RNA + metabolitos (n=9 apareadas)")
+png(file.path(fig_dir, "02_DIABLO_muestras.png"), width = 2400, height = 900, res = 200)
+plotIndiv(fit, ind.names = TRUE, legend = TRUE, title = "DIABLO E109: RNA + metabolitos SN + extractos (n=9 apareadas)")
 dev.off()
 png(file.path(fig_dir, "03_DIABLO_circos.png"), width = 1800, height = 1800, res = 200)
 try(circosPlot(fit, cutoff = 0.8, line = TRUE, size.variables = 0.5), silent = TRUE)

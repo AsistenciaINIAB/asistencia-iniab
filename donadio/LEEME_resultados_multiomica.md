@@ -1,4 +1,4 @@
-# Análisis multi-ómico E109 – Az39: transcriptómica, metabolómica e integración (versión 3)
+# Análisis multi-ómico E109 – Az39: transcriptómica, metabolómica e integración (versión 4)
 
 **Cambios respecto de la versión 1:**
 - **Nombres de genes en la matriz de conteos.** La matriz del proveedor (`ARG_Completo_Unique reads.xlsx`) usa el símbolo del gen (p. ej. `rplT`, `actP_1`) en lugar del locus_tag en 139 genes de E109 y 120 de Az39. Se reasignaron por posición genómica, verificando el símbolo de cada uno; no hubo ninguna inconsistencia (`scripts/00_preparar_datos.py`). Las estadísticas no cambian, pero ahora esos genes tienen anotación.
@@ -102,8 +102,8 @@ Desde los FASTQ también se puede ver la cobertura a lo largo de *ipdC* para ubi
 - 5 grupos × 6 réplicas: E109, E109+AIA, E109+Az39 (EA), Az39 MMAB (AzM), Az39 LB (AzLB).
 
 **Método:**
-- log2 de cada señal, modelo `~ grupo + tanda`, donde la tanda es réplicas 1–3 contra 4–6; FDR por BH. Script `05_metabolomica_SN.R`.
-- **Los extractos intracelulares no se analizaron.** Su matriz está solo dentro de `ANEXO_Extractos.rar`, que supera el límite de descarga del conector. Si se descomprime en el Drive, se agrega.
+- log2 de cada señal, modelo `~ grupo + tanda`, donde la tanda es réplicas 1–3 contra 4–6; FDR por BH. Script `05_metabolomica.R` (argumento `SN`).
+- Los extractos intracelulares se analizan en la sección 3b. Es el mismo script, con el argumento `EXT`.
 
 **Resultados:**
 - **PCA (`01_PCA_sobrenadantes.png`):**
@@ -121,6 +121,43 @@ Desde los FASTQ también se puede ver la cobertura a lo largo de *ipdC* para ubi
 
   Es decir, **Az39 consume los C4-dicarboxilatos y aporta triptófano**. Las diferencias de los informes 2025/2026 en fumarato, malato y Trp no indican "activación de rutas" en E109: vienen de Az39 y de su medio.
 - **Separación del co-cultivo:** si no hubiera interacción, EA = E + AzM − medio fresco. Como no hay espectros de medio fresco, solo se puede afirmar con seguridad producción emergente (EA > E + AzM). **Solo 1 señal sin identificar (U_84_3) cumple ese criterio.** Para el resto hacen falta **blancos de medio** (MMAB+Trp, PSY y AB sin inocular).
+
+## 3b. Metabolómica de extractos intracelulares (RMN ¹H, 4 h)
+
+**Datos:** `matriz_MCR_extractos_sinQC.csv` (`ANEXO_Extractos`):
+- 192 señales: 54 asignadas a 30 metabolitos y 138 sin identificar;
+- los mismos 5 grupos × 6 réplicas.
+
+Script `05_metabolomica.R EXT`, resultados en `resultados/metabolomica_extractos/`.
+
+**Calidad, mucho mejor que en el sobrenadante:**
+- **no hay efecto de tanda** (0 de 192 señales);
+- **E1–E3 son normales**, así que la anomalía de esas réplicas es exclusiva del sobrenadante, probablemente un problema de esas muestras de medio;
+- los 5 grupos se separan bien en el PCA (`01_PCA_EXT.png`).
+
+**Efecto del AIA exógeno sobre E109 (68 señales, FDR < 0,05):** el cambio principal es **la caída de la trehalosa intracelular (−1,2 a −1,5 log2, es decir 2,5 a 3 veces menos)**, junto con maltotriosa y betaína.
+
+**Co-cultivo.** Como el pellet mezcla células de las dos bacterias en proporción desconocida, sin interacción EA debería quedar *entre* E109 y Az39. Las señales que quedan fuera de ese rango indican un efecto de la interacción. Esta prueba no necesita blancos de medio.
+- **22 de 192 señales quedan fuera del rango**: 17 por encima y 5 por debajo.
+- Consistentes en las 6 réplicas:
+  - **malato intracelular ↓**: por debajo de las dos bacterias;
+  - **glutamato ↓**;
+  - **acetilcolina ↑**;
+  - varias señales no identificadas (U_82_2 ↓, U_60_2 ↓, U_93_1 ↑, U_20_3 ↑, U_124_1 ↑).
+- **Acetato (+3,7 log2), 2-hidroxibutirato y un aminoácido N-acetilado** también suben por encima de las dos bacterias, pero el efecto es mucho mayor en **EA1 y EA2**: el acetato vale 0,55 y 0,75, contra 0,08–0,14 en las demás réplicas.
+  - Es una firma de tipo fermentativo o de desborde, que podría indicar falta de oxígeno en esos frascos.
+  - EA1 y EA2 están apareadas con las muestras de RNA 7-ARG y 8-ARG.
+
+**Integración con el RNA (trehalosa):**
+- En co-cultivo, E109 **activa la síntesis de trehalosa y glucógeno**:
+  - *otsA* (RN69_01390) +3,1;
+  - trehalosa sintasa *treS* (RN69_04470) +3,3;
+  - *otsB* +1,5;
+  - glucógeno sintasa (RN69_33940) +2,7.
+- Según la sección 1, **los tres primeros son AIA-independientes**: responden igual a Az39-*ipdC*, y el AIA exógeno no los induce.
+- A la vez, **el AIA solo reduce la trehalosa intracelular de E109**.
+- Conclusión: en co-cultivo, E109 se prepara para acumular osmoprotectores y reservas a través de una señal que no es el AIA, y el AIA empuja en sentido contrario. Encaja con los ensayos fisiológicos de trehalosa y EPS del informe 2026, y es la segunda vía, independiente del AIA, que vale la pena seguir.
+- La trehalosa intracelular del pellet mezclado no se puede usar para confirmarlo, porque Az39 casi no tiene trehalosa y diluye la señal.
 
 ## 4. Integración RNA ↔ metabolitos
 
@@ -144,19 +181,21 @@ Lectura:
 
 Muestras: control 1–3, AIA 4–6 y Az39 7–9, cada una con su frasco de metabolómica. Hay 839 de 7.560 pares con FDR < 0,05. **Con 3 grupos × 3 muestras, la correlación refleja casi solo qué separa al control de los tratados**. Además, el control apareado (E1–E3) es justamente el anómalo. Estas correlaciones no se pueden leer como relaciones mecánicas gen–metabolito.
 
-**C) DIABLO, lado E109 (n = 9):**
-- La correlación entre las componentes de RNA y de metabolitos es 0,98.
+**C) DIABLO, lado E109 (n = 9; bloques: RNA, sobrenadante y extractos):**
+- La correlación entre las componentes de los tres bloques es mayor que 0,99.
 - La firma de RNA es **la isla *iac***: oxidorreductasa de indolpiruvato, *iacC/iacD*, ferredoxina, gentisato dioxigenasa.
-- La firma de metabolitos está dominada por las **señales anómalas de E1–E3**.
+- En el sobrenadante, la firma está dominada por las **señales anómalas de E1–E3**.
+- En los extractos, que no tienen esa anomalía, la firma la forman la betaína y U_27_3, U_82_2, U_51_1 y U_55_2. Varias de esas señales son también "emergentes" del co-cultivo.
 
 Sirve como confirmación visual de que las dos ómicas separan al control de los tratamientos. No aporta una firma metabólica biológica confiable.
 
 ## 5. Conclusión integrada y pendientes
 
 1. **El resultado sólido es que el AIA de Az39 activa en E109 la isla de catabolismo de AIA (*iac*).** Se ve en RNA (AIA exógeno ≈ co-cultivo, menor con el mutante) y es coherente con el triptófano y el AIA presentes en el sobrenadante.
-2. En el sobrenadante del co-cultivo domina lo que aporta y consume Az39 (Trp ↑, C4-dicarboxilatos ↓). Con estos datos **no hay evidencia de metabolitos producidos por la interacción**, salvo una señal sin identificar.
-3. **Pendientes de laboratorio, en orden de prioridad:**
+2. **Hay una segunda respuesta de E109 que no depende del AIA: la síntesis de trehalosa y glucógeno** (*otsA*, *treS*, glucógeno sintasa), activada en co-cultivo e igual con Az39-*ipdC*. El AIA solo hace lo opuesto: baja la trehalosa intracelular.
+3. En el sobrenadante del co-cultivo domina lo que aporta y consume Az39 (Trp ↑, C4-dicarboxilatos ↓). **En los extractos hay 22 señales que solo se explican por la interacción**; las más consistentes son malato y glutamato ↓ y acetilcolina ↑. La firma de acetato y 2-hidroxibutirato depende sobre todo de 2 frascos.
+4. **Pendientes de laboratorio, en orden de prioridad:**
    1. confirmar la pérdida del plásmido p3 en Az39-*ipdC* y la mutación de *ipdC*;
-   2. revisar qué pasó con los frascos E1–E3;
+   2. revisar qué pasó con los sobrenadantes E1–E3 (los extractos de esos frascos están bien) y con los frascos EA1–EA2 (firma fermentativa);
    3. medir blancos de medio por RMN (MMAB+Trp, PSY, AB) e identificar la señal "Triptófano3" con un estándar de AIA;
-   4. descomprimir `ANEXO_Extractos.rar` en el Drive para analizar los extractos intracelulares.
+   4. intentar identificar las señales emergentes de los extractos (U_82_2, U_60_2, U_93_1, U_20_3, U_124_1).
