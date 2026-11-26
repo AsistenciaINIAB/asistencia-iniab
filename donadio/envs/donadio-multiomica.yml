@@ -30,3 +30,8 @@ dependencies:
   - seaborn
   - openpyxl
   - mofapy2
+  # anotación funcional COG (RPS-BLAST contra CDD/COG de NCBI)
+  - blast
+  - pip
+  - pip:
+      - cogclassifier
