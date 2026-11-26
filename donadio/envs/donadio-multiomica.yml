@@ -1,0 +1,32 @@
+# Ambiente para el análisis multi-ómico (transcriptómica + metabolómica RMN)
+# Proyecto: interacción B. japonicum E109 - A. argentinense Az39 (tesis Donadío)
+# Crear con:  micromamba env create -f donadio-multiomica.yml   (o conda / mamba)
+name: donadio-multiomica
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # R + Bioconductor
+  - r-base=4.4
+  - bioconductor-deseq2
+  - bioconductor-apeglm
+  - bioconductor-mixomics
+  - bioconductor-mofa2
+  - bioconductor-clusterprofiler
+  - r-readxl
+  - r-data.table
+  - r-ggplot2
+  - r-pheatmap
+  - r-ggrepel
+  - r-optparse
+  # Python
+  - python=3.11
+  - pandas
+  - numpy
+  - scipy
+  - statsmodels
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - openpyxl
+  - mofapy2
