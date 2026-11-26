@@ -1,0 +1,79 @@
+omica	id_muestra	rotulo_original	condicion	codigo_condicion	replica	tiempo	fraccion	notas
+transcriptomica	1-ARG		E109	E109_ctrl	1	4 h		conteos E109
+transcriptomica	2-ARG		E109	E109_ctrl	2	4 h		conteos E109
+transcriptomica	3-ARG		E109	E109_ctrl	3	4 h		conteos E109
+transcriptomica	4-ARG		E109 + AIA	E109_AIA	1	4 h		conteos E109
+transcriptomica	5-ARG		E109 + AIA	E109_AIA	2	4 h		conteos E109
+transcriptomica	6-ARG		E109 + AIA	E109_AIA	3	4 h		conteos E109
+transcriptomica	7-ARG		E109 + Az39	E109_Az39	1	4 h		conteos E109 y Az39
+transcriptomica	8-ARG		E109 + Az39	E109_Az39	2	4 h		conteos E109 y Az39
+transcriptomica	9-ARG		E109 + Az39	E109_Az39	3	4 h		conteos E109 y Az39
+transcriptomica	10-ARG		E109 + Az39-ipdC	E109_Az39ipdC	1	4 h		conteos E109 y Az39
+transcriptomica	11-ARG		E109 + Az39-ipdC	E109_Az39ipdC	2	4 h		conteos E109 y Az39
+transcriptomica	12-ARG		E109 + Az39-ipdC	E109_Az39ipdC	3	4 h		conteos E109 y Az39
+transcriptomica	13-ARG		Az39	Az39_ctrl	1	4 h		conteos Az39
+transcriptomica	14-ARG		Az39	Az39_ctrl	2	4 h		conteos Az39
+transcriptomica	15-ARG		Az39	Az39_ctrl	3	4 h		conteos Az39
+transcriptomica	16-ARG		Az39-ipdC	Az39ipdC_ctrl	1	4 h		conteos Az39
+transcriptomica	17-ARG		Az39-ipdC	Az39ipdC_ctrl	2	4 h		conteos Az39
+transcriptomica	18-ARG		Az39-ipdC	Az39ipdC_ctrl	3	4 h		conteos Az39
+metabolomica_ext	E1	E.1	E109	E_ctrl	1	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	E2	E.2	E109	E_ctrl	2	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	E3	E.3	E109	E_ctrl	3	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	E4	E.4	E109	E_ctrl	4	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	E5	E.5	E109	E_ctrl	5	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	E6	E.6	E109	E_ctrl	6	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	AzM1	AzM.1	Az39 MMAB	Az39_MMAB	1	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	AzM2	AzM.2	Az39 MMAB	Az39_MMAB	2	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	AzM3	AzM.3	Az39 MMAB	Az39_MMAB	3	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	AzM4	AzM.4	Az39 MMAB	Az39_MMAB	4	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	AzM5	AzM.5	Az39 MMAB	Az39_MMAB	5	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	AzM6	AzM.6	Az39 MMAB	Az39_MMAB	6	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	EA1	EA.1	E109 + Az39	E109_Az39	1	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	EA2	EA.2	E109 + Az39	E109_Az39	2	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	EA3	EA.3	E109 + Az39	E109_Az39	3	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	EA4	EA.4	E109 + Az39	E109_Az39	4	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	EA5	EA.5	E109 + Az39	E109_Az39	5	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	EA6	EA.6	E109 + Az39	E109_Az39	6	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	Eaia1	Eaia.1	E109 + AIA	E109_AIA	1	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	Eaia2	Eaia.2	E109 + AIA	E109_AIA	2	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	Eaia3	Eaia.3	E109 + AIA	E109_AIA	3	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	Eaia4	Eaia.4	E109 + AIA	E109_AIA	4	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	Eaia5	Eaia.5	E109 + AIA	E109_AIA	5	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	Eaia6	Eaia.6	E109 + AIA	E109_AIA	6	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	ALB1	ALB.1	Az39 LB	Az39_LB	1	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	ALB2	ALB.2	Az39 LB	Az39_LB	2	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	ALB3	ALB.3	Az39 LB	Az39_LB	3	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	ALB4	ALB.4	Az39 LB	Az39_LB	4	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	ALB5	ALB.5	Az39 LB	Az39_LB	5	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_ext	ALB6	ALB.6	Az39 LB	Az39_LB	6	4 h	extracto (intracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	E1	1.1	E109	E_ctrl	1	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	E2	1.2	E109	E_ctrl	2	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	E3	1.3	E109	E_ctrl	3	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	E4	1.4	E109	E_ctrl	4	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	E5	1.5	E109	E_ctrl	5	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	E6	1.6	E109	E_ctrl	6	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	AzM1	2.1	Az39 MMAB	Az39_MMAB	1	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	AzM2	2.2	Az39 MMAB	Az39_MMAB	2	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	AzM3	2.3	Az39 MMAB	Az39_MMAB	3	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	AzM4	2.4	Az39 MMAB	Az39_MMAB	4	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	AzM5	2.5	Az39 MMAB	Az39_MMAB	5	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	AzM6	2.6	Az39 MMAB	Az39_MMAB	6	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	EA1	3.1	E109 + Az39	E109_Az39	1	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	EA2	3.2	E109 + Az39	E109_Az39	2	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	EA3	3.3	E109 + Az39	E109_Az39	3	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	EA4	3.4	E109 + Az39	E109_Az39	4	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	EA5	3.5	E109 + Az39	E109_Az39	5	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	EA6	3.6	E109 + Az39	E109_Az39	6	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	Eaia1	4.1	E109 + AIA	E109_AIA	1	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	Eaia2	4.2	E109 + AIA	E109_AIA	2	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	Eaia3	4.3	E109 + AIA	E109_AIA	3	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	Eaia4	4.4	E109 + AIA	E109_AIA	4	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	Eaia5	4.5	E109 + AIA	E109_AIA	5	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	Eaia6	4.6	E109 + AIA	E109_AIA	6	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	ALB1	5.1	Az39 LB	Az39_LB	1	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	ALB2	5.2	Az39 LB	Az39_LB	2	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	ALB3	5.3	Az39 LB	Az39_LB	3	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	ALB4	5.4	Az39 LB	Az39_LB	4	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	ALB5	5.5	Az39 LB	Az39_LB	5	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
+metabolomica_sn	ALB6	5.6	Az39 LB	Az39_LB	6	4 h	sobrenadante (extracelular)	lote? (1-3 vs 4-6)
