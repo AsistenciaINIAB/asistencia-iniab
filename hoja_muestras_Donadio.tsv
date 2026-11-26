@@ -11,9 +11,9 @@ transcriptomica	9-ARG		E109 + Az39	E109_Az39	3	4 h		conteos E109 y Az39	EA3 (ext
 transcriptomica	10-ARG		E109 + Az39-ipdC	E109_Az39ipdC	1	4 h		conteos E109 y Az39	
 transcriptomica	11-ARG		E109 + Az39-ipdC	E109_Az39ipdC	2	4 h		conteos E109 y Az39	
 transcriptomica	12-ARG		E109 + Az39-ipdC	E109_Az39ipdC	3	4 h		conteos E109 y Az39	
-transcriptomica	13-ARG		Az39	Az39_ctrl	1	4 h		conteos Az39	
-transcriptomica	14-ARG		Az39	Az39_ctrl	2	4 h		conteos Az39	
-transcriptomica	15-ARG		Az39	Az39_ctrl	3	4 h		conteos Az39	
+transcriptomica	13-ARG		Az39	Az39_ctrl	1	4 h		conteos Az39	AzM1 (ext y sn)
+transcriptomica	14-ARG		Az39	Az39_ctrl	2	4 h		conteos Az39	AzM2 (ext y sn)
+transcriptomica	15-ARG		Az39	Az39_ctrl	3	4 h		conteos Az39	AzM3 (ext y sn)
 transcriptomica	16-ARG		Az39-ipdC	Az39ipdC_ctrl	1	4 h		conteos Az39	
 transcriptomica	17-ARG		Az39-ipdC	Az39ipdC_ctrl	2	4 h		conteos Az39	
 transcriptomica	18-ARG		Az39-ipdC	Az39ipdC_ctrl	3	4 h		conteos Az39	
@@ -23,9 +23,9 @@ metabolomica_ext	E3	E.3	E109	E109_ctrl	3	4 h	extracto (intracelular)	replica 1-3
 metabolomica_ext	E4	E.4	E109	E109_ctrl	4	4 h	extracto (intracelular)	replica 4-6 (sin par de RNA)	
 metabolomica_ext	E5	E.5	E109	E109_ctrl	5	4 h	extracto (intracelular)	replica 4-6 (sin par de RNA)	
 metabolomica_ext	E6	E.6	E109	E109_ctrl	6	4 h	extracto (intracelular)	replica 4-6 (sin par de RNA)	
-metabolomica_ext	AzM1	AzM.1	Az39 MMAB	Az39_MMAB	1	4 h	extracto (intracelular)	inoculo de Az39 usado en el co-cultivo	
-metabolomica_ext	AzM2	AzM.2	Az39 MMAB	Az39_MMAB	2	4 h	extracto (intracelular)	inoculo de Az39 usado en el co-cultivo	
-metabolomica_ext	AzM3	AzM.3	Az39 MMAB	Az39_MMAB	3	4 h	extracto (intracelular)	inoculo de Az39 usado en el co-cultivo	
+metabolomica_ext	AzM1	AzM.1	Az39 MMAB	Az39_MMAB	1	4 h	extracto (intracelular)	inoculo de Az39 del co-cultivo; replica 1-3 apareada con RNA	13-ARG
+metabolomica_ext	AzM2	AzM.2	Az39 MMAB	Az39_MMAB	2	4 h	extracto (intracelular)	inoculo de Az39 del co-cultivo; replica 1-3 apareada con RNA	14-ARG
+metabolomica_ext	AzM3	AzM.3	Az39 MMAB	Az39_MMAB	3	4 h	extracto (intracelular)	inoculo de Az39 del co-cultivo; replica 1-3 apareada con RNA	15-ARG
 metabolomica_ext	AzM4	AzM.4	Az39 MMAB	Az39_MMAB	4	4 h	extracto (intracelular)	inoculo de Az39 usado en el co-cultivo	
 metabolomica_ext	AzM5	AzM.5	Az39 MMAB	Az39_MMAB	5	4 h	extracto (intracelular)	inoculo de Az39 usado en el co-cultivo	
 metabolomica_ext	AzM6	AzM.6	Az39 MMAB	Az39_MMAB	6	4 h	extracto (intracelular)	inoculo de Az39 usado en el co-cultivo	
@@ -53,9 +53,9 @@ metabolomica_sn	E3	1.3	E109	E109_ctrl	3	4 h	sobrenadante (extracelular)	replica 
 metabolomica_sn	E4	1.4	E109	E109_ctrl	4	4 h	sobrenadante (extracelular)	replica 4-6 (sin par de RNA)	
 metabolomica_sn	E5	1.5	E109	E109_ctrl	5	4 h	sobrenadante (extracelular)	replica 4-6 (sin par de RNA)	
 metabolomica_sn	E6	1.6	E109	E109_ctrl	6	4 h	sobrenadante (extracelular)	replica 4-6 (sin par de RNA)	
-metabolomica_sn	AzM1	2.1	Az39 MMAB	Az39_MMAB	1	4 h	sobrenadante (extracelular)	inoculo de Az39 usado en el co-cultivo	
-metabolomica_sn	AzM2	2.2	Az39 MMAB	Az39_MMAB	2	4 h	sobrenadante (extracelular)	inoculo de Az39 usado en el co-cultivo	
-metabolomica_sn	AzM3	2.3	Az39 MMAB	Az39_MMAB	3	4 h	sobrenadante (extracelular)	inoculo de Az39 usado en el co-cultivo	
+metabolomica_sn	AzM1	2.1	Az39 MMAB	Az39_MMAB	1	4 h	sobrenadante (extracelular)	inoculo de Az39 del co-cultivo; replica 1-3 apareada con RNA	13-ARG
+metabolomica_sn	AzM2	2.2	Az39 MMAB	Az39_MMAB	2	4 h	sobrenadante (extracelular)	inoculo de Az39 del co-cultivo; replica 1-3 apareada con RNA	14-ARG
+metabolomica_sn	AzM3	2.3	Az39 MMAB	Az39_MMAB	3	4 h	sobrenadante (extracelular)	inoculo de Az39 del co-cultivo; replica 1-3 apareada con RNA	15-ARG
 metabolomica_sn	AzM4	2.4	Az39 MMAB	Az39_MMAB	4	4 h	sobrenadante (extracelular)	inoculo de Az39 usado en el co-cultivo	
 metabolomica_sn	AzM5	2.5	Az39 MMAB	Az39_MMAB	5	4 h	sobrenadante (extracelular)	inoculo de Az39 usado en el co-cultivo	
 metabolomica_sn	AzM6	2.6	Az39 MMAB	Az39_MMAB	6	4 h	sobrenadante (extracelular)	inoculo de Az39 usado en el co-cultivo	
